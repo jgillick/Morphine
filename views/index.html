@@ -1,0 +1,103 @@
+<html>
+<head>
+  <title>Create a new API</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+  <%= js('lib/all.js') %>
+</head>
+<body>
+   <h1>Create a new API</h1>
+
+  <form id="endpoint-form">
+  </form>
+
+  <script data-template-name="index" type="text/x-handlebars">
+    <p>
+      <label for="url">API URL:</label>
+      {{input size="70" valueBinding="url"}}
+      {{view Ember.Select
+        content=Morphine.http_methods
+        valueBinding="method"
+      }}
+    </p>
+    <p>
+      <button {{action "addRemote"}}>+ Remote</button>
+    </p>
+    <ul id="remotes">
+    {{#each remotes}}
+      {{view Morphine.RemoteView context="this"}}
+    {{/each}}
+    </ul>
+    <fieldset>
+      <legend>Response</legend>
+
+      <h3>Pre-processing</h3>
+      {{textarea valueBinding="preprocess"}}
+
+      <h3>Template</h3>
+      {{textarea valueBinding="response.template"}}
+    </fieldset>
+    <p class="buttons">
+      <button {{action "save"}}>Save</button>
+  </script>
+
+  <script data-template-name="edit_remote" type="text/x-handlebars">
+    <h2>Remote API</h2>
+    <p>
+      <label>
+        <span>URL to remote API</span>
+        {{input valueBinding="url"}}
+      </label>
+      {{view Ember.Select
+        content=Morphine.http_methods
+        valueBinding="method"
+      }}
+    </p>
+    <div class="name">
+      <label>
+        <span>ID</span>
+        {{input valueBinding="id"}}
+      <label>
+      <div class="note">
+        This is the code name that the response from this feed will be referred to in the global data object that you can use
+        in the transformation template.
+      </div>
+    </div>
+    {{#unless view.isMethodGET}}
+      <fieldset class="form-data">
+        <legend>Form Data</legend>
+        <p>
+          {{textarea valueBinding="formData"}}
+        </p>
+      </fieldset>
+    {{/unless}}
+    {{view Morphine.FixtureView context="fixture"}}
+
+  </script>
+
+  <script data-template-name="edit_fixture" type="text/x-handlebars">
+    <fieldset class="fixture">
+      <legend>Fixture</legend>
+      <p>
+        Enter an example response body that you expect from the server. You can then use this to test the API endpoint.
+      </p>
+      <p>
+        <label>
+          <span>Format</span>
+          {{view Ember.Select
+            content=Morphine.supported_mimes
+            valueBinding="mime"
+          }}
+        </label>
+      </p>
+      <p>
+        <label>
+          <span>Body</span>
+          {{textarea valueBinding="source"}}
+        </label>
+      </p>
+    </fieldset>
+  </script>
+
+  <%= js('/js/morphine/all.js') %>
+</body>
+</html>
