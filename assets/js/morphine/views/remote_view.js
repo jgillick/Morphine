@@ -12,5 +12,17 @@ Morphine.RemoteView = Em.View.extend({
   */
   isMethodGET: function(){
     return this.get('context.method') == 'GET';
-  }.property('context.method')
+  }.property('context.method'),
+
+  actions: {
+
+    /**
+      Remove this remote from the remotes list
+
+      @method
+    */
+    remove: function(){
+      this.get('context').deleteRecord();
+    }
+  }
 });

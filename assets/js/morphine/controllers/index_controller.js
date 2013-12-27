@@ -17,10 +17,10 @@ Morphine.IndexController = Em.ObjectController.extend({
             'method': method,
             'id': 'remote%@'.fmt(index)
         })
-      remotes.pushObject(newRemote);
+      remotes.addObject(newRemote);
 
       this.set('content.remotes', remotes);
-      this.set('content.remotesIndex', index);
+      this.set('content.remotes_index', index);
       return newRemote
     },
 
@@ -28,8 +28,7 @@ Morphine.IndexController = Em.ObjectController.extend({
       Save the API endpoint
     */
     save: function(){
-      // console.log(this.get('remotes').objectAt(0).toJSON());
-      console.log(this.get('content.remotesIndex'));
+      console.log(this.get('content.response.template'));
       this.get('content').save();
     }
   }

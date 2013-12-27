@@ -1,1 +1,16 @@
 body{font:normal 13px Helvetica}
+
+input {
+  width: 30em;
+}
+textarea {
+  width: 30em;
+  height: 10em;
+}
+label span {
+  display: block;
+  font-weight: bold;
+}
+label span:after {
+  content: ': ';
+}

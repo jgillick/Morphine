@@ -8,6 +8,9 @@
       "node-compass": "*",
       "connect-assets": "2.5",
       "consolidate": "*",
+      "underscore": "*",
+      "mkdirp": "*",
       "underscore": "*"
+
    }
 }

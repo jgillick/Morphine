@@ -13,7 +13,7 @@
   <script data-template-name="index" type="text/x-handlebars">
     <p>
       <label for="url">API URL:</label>
-      {{input size="70" valueBinding="url"}}
+      {{input size="70" valueBinding="path"}}
       {{view Ember.Select
         content=Morphine.http_methods
         valueBinding="method"
@@ -41,7 +41,7 @@
   </script>
 
   <script data-template-name="edit_remote" type="text/x-handlebars">
-    <h2>Remote API</h2>
+    <h2>Remote API <button {{action "remove" target="view"}}>&times;</button></h2>
     <p>
       <label>
         <span>URL to remote API</span>
@@ -52,7 +52,7 @@
         valueBinding="method"
       }}
     </p>
-    <div class="name">
+    <p class="name">
       <label>
         <span>ID</span>
         {{input valueBinding="id"}}
@@ -61,7 +61,16 @@
         This is the code name that the response from this feed will be referred to in the global data object that you can use
         in the transformation template.
       </div>
-    </div>
+    </p>
+    <p class="mime">
+      <label>
+        <span>Repsponse type</span>
+        {{view Ember.Select
+          content=Morphine.supported_mimes
+          valueBinding="mime"
+        }}
+      </label>
+    </p>
     {{#unless view.isMethodGET}}
       <fieldset class="form-data">
         <legend>Form Data</legend>
@@ -70,11 +79,6 @@
         </p>
       </fieldset>
     {{/unless}}
-    {{view Morphine.FixtureView context="fixture"}}
-
-  </script>
-
-  <script data-template-name="edit_fixture" type="text/x-handlebars">
     <fieldset class="fixture">
       <legend>Fixture</legend>
       <p>
@@ -82,20 +86,12 @@
       </p>
       <p>
         <label>
-          <span>Format</span>
-          {{view Ember.Select
-            content=Morphine.supported_mimes
-            valueBinding="mime"
-          }}
-        </label>
-      </p>
-      <p>
-        <label>
           <span>Body</span>
-          {{textarea valueBinding="source"}}
+          {{textarea valueBinding="fixture"}}
         </label>
       </p>
     </fieldset>
+
   </script>
 
   <%= js('/js/morphine/all.js') %>

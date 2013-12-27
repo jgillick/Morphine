@@ -20,9 +20,9 @@ Morphine = Ember.Application.create({
 /**
   Ember data adapter
 */
-Morphine.DataAdapter = DS.RESTAdapter.extend({
+DS.RESTAdapter.reopen({
   host: 'http://localhost:3000',
-  namespace: 'endpoint/'
+  namespace: ''
 });
 // Morphine.Store = DS.Store.create({
 //    adapter: 'Morphine.DataAdapter'
@@ -30,27 +30,39 @@ Morphine.DataAdapter = DS.RESTAdapter.extend({
 Ember.Inflector.inflector.uncountable('Headers');
 
 /**
-  Add support for DS.attr('array')
-  Which is a simple arrays of strings
+  Update serializer to add embedded records
+  http://mozmonkey.com/2013/12/serializing-embedded-relationships-ember-data-beta/
 */
-Morphine.ArrayTransform = DS.Transform.extend({
-  deserialize: function(value) {
-    return value;
-  },
-  serialize: function(value) {
-    return value;
-  }
-});
+DS.RESTSerializer.reopen({
+  serializeBelongsTo: function(record, json, relationship) {
+    var key = relationship.key,
+        belongsTo = Ember.get(record, key);
 
-/**
-  Add support for DS.attr('hash')
-  Which is a key/value object
-*/
-Morphine.HashTransform = DS.Transform.extend({
-  serialize: function(value) {
-    if (value) return Em.getProperties(value, Em.get(value, 'propertyName') || []);
+    key = this.keyForRelationship ? this.keyForRelationship(key, "belongsTo") : key;
+    if (belongsTo && relationship.options.embedded === 'always') {
+      json[key] = belongsTo.serialize();
+    }
+    else {
+      return this._super(record, json, relationship);
+    }
   },
-  deserialize: function(value) {
-    if (value) return Ember.Object.create(value);
+  serializeHasMany: function(record, json, relationship) {
+    var key = relationship.key,
+        hasMany = Ember.get(record, key),
+        relationshipType = DS.RelationshipChange.determineRelationshipType(record.constructor, relationship);
+
+    if (relationship.options.embedded === 'always') {
+      if (hasMany && relationshipType === 'manyToNone' || relationshipType === 'manyToMany' ||
+        relationshipType === 'manyToOne') {
+
+        json[key] = [];
+        hasMany.forEach(function(item, index){
+          json[key].push(item.serialize());
+        });
+      }
+    }
+    else {
+      return this._super(record, json, relationship);
+    }
   }
 });
