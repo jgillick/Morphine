@@ -10,7 +10,7 @@
       "consolidate": "*",
       "underscore": "*",
       "mkdirp": "*",
-      "underscore": "*"
-
+      "underscore": "*",
+      "handlebars": "*"
    }
 }

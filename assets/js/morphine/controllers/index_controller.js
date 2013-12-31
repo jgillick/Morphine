@@ -20,7 +20,7 @@ Morphine.IndexController = Em.ObjectController.extend({
       remotes.addObject(newRemote);
 
       this.set('content.remotes', remotes);
-      this.set('content.remotes_index', index);
+      this.set('content.remotesIndex', index);
       return newRemote
     },
 
@@ -28,7 +28,8 @@ Morphine.IndexController = Em.ObjectController.extend({
       Save the API endpoint
     */
     save: function(){
-      console.log(this.get('content.response.template'));
+      var id = '%@:%@'.fmt(this.get('path'), this.get('method')); // ID = /my/new/endpoint:GET
+      this.set('id', id);
       this.get('content').save();
     }
   }

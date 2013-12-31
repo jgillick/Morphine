@@ -11,6 +11,9 @@
   </form>
 
   <script data-template-name="index" type="text/x-handlebars">
+    <p class="buttons">
+      <button {{action "save"}}>Save</button>
+    </p>
     <p>
       <label for="url">API URL:</label>
       {{input size="70" valueBinding="path"}}
@@ -38,6 +41,7 @@
     </fieldset>
     <p class="buttons">
       <button {{action "save"}}>Save</button>
+    </p>
   </script>
 
   <script data-template-name="edit_remote" type="text/x-handlebars">

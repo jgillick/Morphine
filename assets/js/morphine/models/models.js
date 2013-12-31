@@ -6,7 +6,7 @@ Morphine.Endpoint = DS.Model.extend({
   /**
     The URL to this endpoint
   */
-  path: DS.attr('string', {defaultValue: ''}),
+  path: DS.attr('string', {defaultValue: 'TEST/PATH'}),
 
   /**
     The HTTP method: GET, POST, PUT, etc
@@ -23,7 +23,7 @@ Morphine.Endpoint = DS.Model.extend({
    This is an index that goes up with every new remote and never goes down.
    It's used to give new remotes a unique ID that should not class with previous remotes that have been added or removed.
   */
-  remotes_index: DS.attr('number', {defaultValue: 0}),
+  remotesIndex: DS.attr('number', {defaultValue: 0}),
 
   /**
    JavaScript used to process the data from the remotes before going to the response template
@@ -50,7 +50,7 @@ Morphine.Remote = DS.Model.extend({
   /**
     The server URL
   */
-  url: DS.attr('string'),
+  url: DS.attr('string', {defaultValue: 'http://test.com/api/url'}),
 
   /**
     The HTTP method: GET, POST, PUT, etc
@@ -70,7 +70,7 @@ Morphine.Remote = DS.Model.extend({
   /**
     Fixture data for this source
   */
-  fixture: DS.attr('string')
+  fixture: DS.attr('string', {defaultValue: 'ARE YOUR BASE BELONGS TO US'})
 
 });
 
