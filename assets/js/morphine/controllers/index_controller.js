@@ -10,7 +10,8 @@ Morphine.IndexController = Em.ArrayController.extend({
 
     // Create an object for each path section
     endpoints.forEach(function(endpoint, index) {
-      console.log(path);
+      if (endpoint.get('isNew')) return; // don't show new, unsaved, endpoints
+
       var path = endpoint.get('path').split('/'),
           branch = tree;
 

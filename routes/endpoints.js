@@ -37,7 +37,6 @@ module.exports = {
         var response = {
           'endpoints': Endpoint.getEndpoints()
         }
-        console.log(response);
 
         res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
         res.end(JSON.stringify(response));
