@@ -1,5 +1,5 @@
 Morphine = Ember.Application.create({
-  rootElement: '#endpoint-form',
+  rootElement: '#morphine-ui',
 
   /**
    The HTTP methods we support

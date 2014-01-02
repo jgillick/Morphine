@@ -3,5 +3,5 @@
 */
 exports.attachHandlers = function attachHandlers (server) {
   require('./ui')(server);
-  require('./api')(server);
+  require('./endpoints').routes(server);
 };

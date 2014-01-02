@@ -26,6 +26,8 @@ server.engine('html', cons.underscore);
 server.set('view engine', 'html');
 server.set('views', __dirname + '/views');
 
+// Load all endpoints
+
 // Router handlers
 routes.attachHandlers(server);
 

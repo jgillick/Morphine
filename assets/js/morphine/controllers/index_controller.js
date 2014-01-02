@@ -1,36 +1,42 @@
 
-Morphine.IndexController = Em.ObjectController.extend({
+Morphine.IndexController = Em.ArrayController.extend({
+
+  /**
+    Get a nested array of directories to endpoints
+  */
+  tree: function(){
+    var endpoints = this.get('content'),
+        tree = Ember.Object.create({});
+
+    // Create an object for each path section
+    endpoints.forEach(function(endpoint, index) {
+      console.log(path);
+      var path = endpoint.get('path').split('/'),
+          branch = tree;
+
+      path.forEach(function(filename, index){
+        if (filename != '') {
+          if (!branch.get(filename)) {
+            branch.set(filename, Ember.Object.create({}));
+          }
+          branch = branch.get(filename);
+        }
+      });
+
+      branch.set(endpoint.get('method'), endpoint);
+    });
+
+    return tree;
+  }.property('content.length'),
 
   actions: {
-    /**
-      Add remote to the morphine API endpoint
-    */
-    addRemote: function(){
-      var remotes = this.get('remotes'),
-          method = this.get('method'),
-          index = this.get('remotesIndex'),
-          newRemote;
-
-      // Create new remote
-      index++;
-      newRemote = this.get('store').createRecord('remote', {
-            'method': method,
-            'id': 'remote%@'.fmt(index)
-        })
-      remotes.addObject(newRemote);
-
-      this.set('content.remotes', remotes);
-      this.set('content.remotesIndex', index);
-      return newRemote
-    },
 
     /**
-      Save the API endpoint
+      Transition to New Endpoint page
     */
-    save: function(){
-      var id = '%@:%@'.fmt(this.get('path'), this.get('method')); // ID = /my/new/endpoint:GET
-      this.set('id', id);
-      this.get('content').save();
+    new: function(){
+      this.transitionToRoute('new');
     }
   }
+
 });

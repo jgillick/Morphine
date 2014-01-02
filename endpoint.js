@@ -6,9 +6,85 @@ var http = require('http'),
     https = require('https'),
     util = require('util'),
     url = require('url'),
+    fs = require('fs'),
+    fpath = require('path'),
     vm = require('vm'),
     Handlebars = require('handlebars'),
     querystring = require('querystring');
+
+// Endpoint lookup arrays
+var allEndpoints = {}, // ID => filePath
+    endpointPaths = {}, // ID => path
+    endpointIds = {};   // path => ID
+
+/**
+  Recursively read directory tree and return basic endpoint objects for each endpoint file.
+
+  @param {String} path   The path to read from
+  @param {Function} callback  A callback function that gets two arguments: err and endpoints
+*/
+function readEndpointTree(path, callback) {
+  var endpoints = {};
+
+  // File file list in path
+  fs.readdir(path, function(err, files){
+    if (err) return callback(err);
+    var pending = files.length;
+
+    // Loop through all files
+    files.forEach(function(file, index){
+      var filepath = fpath.join(path, file);
+
+      // Get file stats
+      fs.lstat(filepath, function(err, stat){
+
+        // Dive into the directory
+        if (stat && stat.isDirectory()) {
+          readEndpointTree(filepath, function(err, children){
+            if (err) return callback(err);
+            pending--;
+            if (!pending) return callback();
+          });
+        }
+
+        // Add file name to list
+        else {
+
+          // Endpoint JSON
+          if (fpath.extname(file).toLowerCase() == '.json') {
+            Endpoint.loadFromFile(filepath, function(err, json) {
+              var id = json.id;
+
+              if (err) {
+                console.log(util.format('Could not load %s, might not be a valid endpoints file: %s', filepath. err.toString()));
+              }
+              else {
+                allEndpoints[id] = {
+                  'uri': json.path,
+                  'file': filepath,
+                  'id': id
+                }
+                endpointIds[json.path] = json.id;
+              }
+
+              pending--;
+              if (!pending) return callback();
+            });
+          }
+          else {
+            pending--;
+            if (!pending) return callback();
+          }
+        }
+      });
+    });
+
+    // Return if everything has been read
+    if (!pending) {
+      callback();
+    }
+  });
+}
 
 /**
   Make a request to a remote and return the response
@@ -135,7 +211,106 @@ function buildTemplate(endpoint, remoteData, callback){
 /*
   Public APIs
 */
-module.exports = {
+module.exports = Endpoint = {
+
+  /**
+    Load all the endpoint paths
+
+    @param {Function} callback  A callback function that gets one argument: err
+  */
+  loadEndpoints: function(callback){
+    console.log('Loading endpoints...');
+
+    readEndpointTree(GLOBAL.endpoint.dir, function(err){
+      if (err)
+        throw err;
+      console.log(util.format('Loaded %d endpoints', Object.keys(allEndpoints).length));
+      callback();
+    });
+  },
+
+  /**
+    Return an endpoint by ID
+
+    @param {String} id The endpoint ID
+    @param {Function} callback  A callback function that gets two arguments: err and endpoint
+  */
+  loadEndpoint: function(id, callback) {
+    var endpoint = allEndpoints[id];
+
+    if (endpoint) {
+      this.loadFromFile(endpoint.file, callback);
+    }
+    else {
+      callback(new Error(util.format('No endpoint for ID %s', id)))
+    }
+  },
+
+  /**
+    Load an endpoint file
+
+    @param {String} path The absolute file path to the endpoint file
+    @param {Function} callback  A callback function that gets two arguments: err and endpoint
+  */
+  loadFromFile: function(filepath, callback) {
+
+    // Doesn't exist
+    if (!fs.existsSync(filepath)){
+      callback(new Error(util.format('File doesn\'t exist at %s', filepath)))
+      return;
+    }
+
+    // Read JSON file
+    fs.readFile(filepath, function(err, data){
+      var json, endpoint;
+
+      if (err) return callback(err);
+
+      // Convert contents to JSON object
+      try {
+        json = JSON.parse(data);
+      } catch(err){
+        return callback(err);
+      }
+
+      // Return
+      if (json.endpoint) {
+        return callback(null, json.endpoint);
+      }
+      // Not valid
+      else {
+        callback('Not a valid endpoint file');
+      }
+    });
+  },
+
+  /**
+    Return all the endpoints in an array of objects with the endpoint id, path and method:
+      [
+        {
+          "id": "/store/delivery/regions:GET",
+          "path": "/store/delivery/regions",
+          "method": "GET"
+        }
+      }
+  */
+  getEndpoints: function(){
+    var endpoints = [];
+
+    for(var id in allEndpoints) {
+      var method = id.split(':')[1],
+          endpoint = allEndpoints[id];
+
+      endpoints.push({
+        'id': id,
+        'path': endpoint.uri,
+        'method': id.split(':')[1]
+      });
+    };
+
+    return endpoints;
+  },
+
 
   /**
     Process the API endpoint and return a response
