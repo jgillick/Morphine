@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Create a new API</title>
+  <title>Morphine API builder</title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
   <%= js('lib/all.js') %>
 </head>
@@ -60,10 +60,10 @@
         <legend>Response</legend>
 
         <h3>Pre-processing</h3>
-        {{textarea valueBinding="preprocess"}}
+        {{view Morphine.AceEditor valueBinding="preprocess"}}
 
         <h3>Template</h3>
-        {{textarea valueBinding="response.template"}}
+        {{view Morphine.AceEditor valueBinding="response.template" language="handlebars"}}
       </fieldset>
       <p class="buttons">
         <button {{action "save"}}>Save</button>
@@ -117,7 +117,7 @@
         <p>
           <label>
             <span>Body</span>
-            {{textarea valueBinding="fixture"}}
+            {{view Morphine.AceEditor valueBinding="fixture"}}
           </label>
         </p>
       </fieldset>

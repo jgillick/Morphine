@@ -1,90 +1,80 @@
 var fs = require('fs'),
-    fpath = require('path'),
-    http = require('http'),
-    util = require('util'),
-    _ = require('underscore'),
     Endpoint = require('../endpoint');
 
 /**
 The Routes for the server UI
 */
-module.exports = {
-
+module.exports = function routes (router) {
 
   /**
-    Attach all the endpoint routes
-
-    @param {Server} router THe express server object
+   Index page
   */
-  routes: function (router, callback) {
-    Endpoint.loadEndpoints(function(){
+  router.get('/', function(req, res){
+    res.render('index', {});
+  });
 
-      /**
-        Return a list of endpoints and their ID's
+  /**
+    Return a list of all endpoints and their ID's
 
-        JSON Format:
+    JSON Format:
+      {
+        "endpoints": [
           {
-            "endpoints": [
-              {
-                "id": "/store/delivery/regions:GET",
-                "path": "/store/delivery/regions",
-                "method": "GET"
-              }
-            ]
+            "id": "/store/delivery/regions:GET",
+            "path": "/store/delivery/regions",
+            "method": "GET"
           }
-      */
-      router.get('/endpoints', function(req, res){
-        var response = {
-          'endpoints': Endpoint.getEndpoints()
-        }
-
-        res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
-        res.end(JSON.stringify(response));
-      });
-    });
-
-    /**
-     Handle all requests
-    */
-    router.all(new RegExp(GLOBAL.endpoint.rootURLPath + '(.*)'), function(req, res){
-      var method = req.method.toUpperCase(),
-          filename = method +'.json',
-          uri = req.params[0],
-          filepath = fpath.join(GLOBAL.endpoint.dir, uri, filename),
-          contents;
-
-      // No endpoint defined here
-      if (!fs.existsSync(filepath)){
-        return res.send(404);
+        ]
       }
 
-      // Read JSON file
-      fs.readFile(filepath, function(err, data){
-        var json;
+    GET: /endpoints/
+  */
+  router.get('/endpoints', function(req, res){
+    var response = {
+      'endpoints': Endpoint.getEndpoints()
+    }
 
-        if (err) {
-          return res.send(500, err);
-        }
+    res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
+    res.end(JSON.stringify(response));
+  });
 
-        // Convert contents to JSON object
-        try {
-          json = JSON.parse(data);
-        } catch(err){
-          console.log(err);
-          return res.send(500);
-        }
+  /**
+    Return the JSON to an endpoint
 
-        // Process endpoint
-        Endpoint.process(json, req, function(err, data) {
-          if (err){
-            res.send(500, err);
-            return;
-          }
+    GET: /endpoints/...
+  */
+  router.get(/\/endpoints\/(.+)/, function(req, res){
+    var id = '/'+ req.params[0].toLowerCase();
 
-          res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
-          res.end(data);
-        });
-      });
+    Endpoint.loadEndpoint(id, function(err, endpoint){
+      if (err) return res.send(500, err.toString());
+
+      var data = {
+        'endpoint': endpoint
+      };
+      res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
+      res.end(JSON.stringify(data));
     });
-  }
+  }),
+
+  /**
+   Save an endpoint to file
+
+   POST: /endpoints
+  */
+  router.post('/endpoints', function(req, res) {
+    var data = req.body,
+        endpoint = data.endpoint;
+
+    Endpoint.addEndpoint(endpoint, function(err, endpoint){
+      var data;
+      if (err) return res.send(500, err);
+
+      data = {
+        'endpoint': endpoint
+      };
+      res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
+      res.end(JSON.stringify(data));
+    });
+  });
 };

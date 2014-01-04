@@ -8,6 +8,7 @@ var http = require('http'),
     url = require('url'),
     fs = require('fs'),
     fpath = require('path'),
+    mkdirp = require('mkdirp'),
     vm = require('vm'),
     Handlebars = require('handlebars'),
     querystring = require('querystring');
@@ -60,7 +61,7 @@ function readEndpointTree(path, callback) {
               }
               else {
                 allEndpoints[id] = {
-                  'uri': json.path,
+                  'path': json.path,
                   'file': filepath,
                   'id': id
                 }
@@ -285,6 +286,69 @@ module.exports = Endpoint = {
   },
 
   /**
+    Add an endpoint to the system.
+
+    @param {Object} endpoint JSON representing the endpoint
+    @param {Function} callback  A callback function that gets two arguments: err and endpoint
+  */
+  addEndpoint: function(endpoint, callback){
+    var path = endpoint.path || '',
+        filename = endpoint.method.toUpperCase() +'.json',
+        filepath, json, data;
+
+    // Remove trailing slash
+    if (path && path.match(/\/$/) != null) {
+      path = path.replace(/\/+$/, '');
+    }
+    path = path.trim().toLowerCase();
+
+    // Update values
+    endpoint.id = endpoint.id.toLowerCase();
+    endpoint.path = path;
+
+    // Root URLs are not allowed
+    if (path == '') {
+      return callback(new Error('Cannot create an endpoint at /'));
+    }
+
+    // Create file path
+    filepath = fpath.join(GLOBAL.endpoint.dir +'/'+ path);
+    if (!fs.existsSync(filepath)){
+      try {
+        mkdirp.sync(filepath);
+      } catch (err){
+        return callback(err);
+      }
+    }
+
+    // Write file
+    data = {
+      'endpoint': endpoint
+    };
+    json = JSON.stringify(data);
+    fs.writeFile(
+      fpath.join(filepath, filename),
+      json,
+      function(err){
+        var id = endpoint.id;
+        if (err) {
+          return callback(err);
+        }
+
+        // Add to endpoint arrays
+        allEndpoints[id] = {
+          'path': path,
+          'file': filepath,
+          'id': id
+        };
+        endpointPaths[id] = path;
+        endpointIds[path] = id;
+
+        callback(null, endpoint);
+      });
+  },
+
+  /**
     Return all the endpoints in an array of objects with the endpoint id, path and method:
       [
         {
@@ -303,7 +367,7 @@ module.exports = Endpoint = {
 
       endpoints.push({
         'id': id,
-        'path': endpoint.uri,
+        'path': endpoint.path,
         'method': id.split(':')[1]
       });
     };

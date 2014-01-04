@@ -3,6 +3,11 @@
   Main endpoint editor controller
 */
 Morphine.EditController = Em.ObjectController.extend({
+  needs: ['index'],
+
+  indexController: null,
+  indexControllerBinding: 'controllers.index',
+
   isNew: false,
 
   actions: {
@@ -32,9 +37,11 @@ Morphine.EditController = Em.ObjectController.extend({
       Save the API endpoint
     */
     save: function(){
-      var id = '%@:%@'.fmt(this.get('path'), this.get('method')); // ID = /my/new/endpoint:GET
+      var id = '%@:%@'.fmt(this.get('path'), this.get('method')).toLowerCase(); // ID = /my/new/endpoint:GET
       this.set('id', id);
-      this.get('content').save();
+      this.get('content').save().then(function(){
+        console.log('Saved', this.get('indexController'));
+      });
     }
   }
 });

@@ -28,7 +28,7 @@ Morphine.IndexController = Em.ArrayController.extend({
     });
 
     return tree;
-  }.property('content.length'),
+  }.property('content', 'content.length', 'content.@each'),
 
   actions: {
 
