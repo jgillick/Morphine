@@ -121,7 +121,14 @@ Morphine.AceEditor = Em.View.extend({
     Mouse down on the editor container
   */
   mouseDown: function(evt){
+
     if (this.get('resizable') && this.get('canResize')) {
+
+      // Ignore anything by the left click
+      if (evt.which != 1 || evt.ctrlKey === true) {
+        return;
+      }
+
       this.set('resizeStart', evt.pageY);
       this.set('isResizing', true);
     }

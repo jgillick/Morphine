@@ -126,7 +126,7 @@ label span:after {
   width: 100%;
   height: 18em;
   border: 1px solid #bbb;
-  border-bottom-width: 3px;
+  border-bottom: 3px double #bbb;
   position: relative;
 
   > div {
