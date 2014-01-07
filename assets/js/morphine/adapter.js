@@ -29,8 +29,8 @@ Morphine.ApplicationSerializer = DS.RESTSerializer.extend({
    @param {Object} item JSON object representing the record to sideload to the payload
   */
   sideloadItem: function(payload, type, item){
-      var sideloadArr = payload[sideloadKey] || [],   // The sideload array for this item
-          sideloadKey = type.typeKey.pluralize(),     // The key for the sideload array
+      var sideloadKey = type.typeKey.pluralize(),     // The key for the sideload array
+          sideloadArr = payload[sideloadKey] || [],   // The sideload array for this item
           primaryKey = Ember.get(this, 'primaryKey'), // the ID property key
           id = item[primaryKey];
 

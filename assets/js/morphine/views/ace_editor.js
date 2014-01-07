@@ -96,9 +96,9 @@ Morphine.AceEditor = Em.View.extend({
     Set the resize cursor
   */
   mouseMove: function(evt){
-    var $ = this.$(),
-        offset = $.offset(),
-        height = $.height();
+    var el = this.$(),
+        offset = el.offset(),
+        height = el.height();
     offset.bottom = offset.top + height;
 
     // Already resizing
@@ -109,11 +109,11 @@ Morphine.AceEditor = Em.View.extend({
     // Within 5 pixels of the bottom
     if ( offset.bottom - evt.pageY < 5){
       this.set('canResize', true);
-      $.css('cursor', 'row-resize');
+      el.css('cursor', 'row-resize');
     }
     else {
       this.set('canResize', false);
-      $.css('cursor', '');
+      el.css('cursor', '');
     }
   },
 
@@ -141,7 +141,8 @@ Morphine.AceEditor = Em.View.extend({
     Handle resizing as the cursor is draging
   */
   resizeHandler: function(evt){
-    var $ = this.$(),
+    var el = this.$(),
+        doc = $(document),
         pageY = evt.pageY,
         el, height, startY, moved, editor;
 
@@ -149,14 +150,18 @@ Morphine.AceEditor = Em.View.extend({
     if (this.get('isResizing')) {
       startY = this.get('resizeStart');
       moved = pageY - startY;
-      height = $.height() + moved;
+      height = el.height() + moved;
 
       // Minimum height
       if (height < 10){
         height = 10;
       }
 
-      $.height(height);
+      // Height
+      el.height(height);
+
+      // TODO: Always keep a buffer at the bottom of the window
+
       this.get('editor').resize();
       this.set('resizeStart', pageY);
     }

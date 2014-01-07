@@ -4,6 +4,7 @@
 */
 Morphine.RemoteView = Em.View.extend({
   templateName: 'edit_remote',
+  classNames: ['remote'],
 
   /**
     True if the selected method is GET

@@ -25,7 +25,7 @@ module.exports = {
     /**
      Handle all requests
     */
-    router.all(new RegExp(GLOBAL.endpoint.rootURLPath + '(.*)'), function(req, res){
+    router.all(new RegExp(GLOBAL.endpoint.rootURI + '(.*)'), function(req, res){
       var method = req.method.toUpperCase(),
           filename = method +'.json',
           uri = req.params[0],

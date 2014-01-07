@@ -1,6 +1,6 @@
 var express = require('express'),
-    routes = require('./routes');
-    //hbs = require('hbs'),
+    routes = require('./routes'),
+    fpath = require('path'),
     compass = require('node-compass'),
     assets = require('connect-assets'),
     cons = require('consolidate');
@@ -9,7 +9,7 @@ var express = require('express'),
 // Morphine options
 GLOBAL.endpoint = {
   dir: './endpoints/',
-  rootURLPath: '/api/'
+  rootURI: '/api/'
 }
 
 // Setup express
@@ -19,6 +19,11 @@ server.configure(function() {
     server.use(compass());
     server.use(assets({}));
     server.use(express.bodyParser());
+
+    server.use(compass({
+        project: fpath.join(__dirname, 'assets'),
+        logging: true
+    }));
     server.use('/', express.static(__dirname + '/assets'));
 });
 

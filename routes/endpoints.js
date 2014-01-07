@@ -10,7 +10,7 @@ module.exports = function routes (router) {
    Index page
   */
   router.get('/', function(req, res){
-    res.render('index', {});
+    res.render('index', GLOBAL);
   });
 
   /**

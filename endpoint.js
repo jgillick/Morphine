@@ -54,12 +54,11 @@ function readEndpointTree(path, callback) {
           // Endpoint JSON
           if (fpath.extname(file).toLowerCase() == '.json') {
             Endpoint.loadFromFile(filepath, function(err, json) {
-              var id = json.id;
-
               if (err) {
-                console.log(util.format('Could not load %s, might not be a valid endpoints file: %s', filepath. err.toString()));
+                console.log(util.format('Could not load %s, might not be a valid endpoints file: %s', filepath, err));
               }
               else {
+                var id = json.id;
                 allEndpoints[id] = {
                   'path': json.path,
                   'file': filepath,

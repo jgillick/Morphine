@@ -9,10 +9,6 @@ Morphine = Ember.Application.create({
   /**
    The mime-types that we know how to read and parse
   */
-  supported_mimes: ['text/json', 'text/xml', 'text/plain'],
+  supported_mimes: ['json', 'xml', 'text'],
 
-  /**
-    The POST form body encoding we support
-  */
-  form_encoding: ['form-data', 'x-www-form-unlencoded']
 });

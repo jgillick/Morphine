@@ -43,11 +43,6 @@ Morphine.Endpoint = DS.Model.extend({
 Morphine.Remote = DS.Model.extend({
 
   /**
-    The morphine API endpoint this remote belongs to
-  */
-  endpoint: DS.belongsTo('endpoint'),
-
-  /**
     The server URL
   */
   url: DS.attr('string', {defaultValue: 'http://test.com/api/url'}),
@@ -70,7 +65,7 @@ Morphine.Remote = DS.Model.extend({
   /**
     Fixture data for this source
   */
-  fixture: DS.attr('string', {defaultValue: 'ARE YOUR BASE BELONGS TO US'})
+  fixture: DS.belongsTo('response', {embedded:'always'})
 
 });
 
@@ -87,5 +82,5 @@ Morphine.Response = DS.Model.extend({
   /**
     The template containing the body content
   */
-  template: DS.attr('string')
+  body: DS.attr('string')
 });
