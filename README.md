@@ -18,4 +18,4 @@ Run
 
     $ node app.js
 
-Now open a browser, goto http://localhost:3000/ and creat your first API endpoint!
+Now open a browser, goto [http://localhost:3000/](http://localhost:3000/) and creat your first API endpoint!
